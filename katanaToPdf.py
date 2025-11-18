@@ -21,9 +21,15 @@ def getChapterAndPage(path: str) -> tuple[str, str]:
     chapter, page = path.split(SPLIT_BY)[-2:]
     return (chapter, page)
 
+def chapterNameConvertFunction(chapter_name: str):
+    if chapter_name.startswith("v"):
+        result = chapter_name.split("c")[0][1:]
+        return "0" * (3 - len(result)) + result
+    return chapter_name
 
 droppedDict: dict[str, str] = dict()
-chapterDirs = sorted([dir for dir in os.listdir(CURRENT_DIR) if os.path.isdir(CURRENT_DIR + SPLIT_BY + dir)])
+chapterDirs = sorted([dir for dir in os.listdir(CURRENT_DIR) if os.path.isdir(CURRENT_DIR + SPLIT_BY + dir)],
+                     key=chapterNameConvertFunction)
 
 allFiles = [[] for x in chapterDirs]
 droppedPages = set()
@@ -33,7 +39,6 @@ for ind, chapterInd in enumerate(chapterDirs):
     for page in sorted(os.listdir(chapterLocation)):
         pageLocation = chapterLocation + SPLIT_BY + page
         allFiles[ind].append(pageLocation)
-
 
 def combinePDF(start: int, end: int) -> None:
     try:
